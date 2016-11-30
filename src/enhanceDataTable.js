@@ -15,6 +15,8 @@ type Props = {
   keys: Array<string>;
   buildRowOptions: any;
   filters: any;
+  headerLayout: Array<object>;
+  bottomLayout: Array<object>;
 };
 
 const mapPropsToState = (props) => ({
@@ -30,6 +32,13 @@ export default function enhanceDataTable(ComposedComponent) {
       filters: {
         globalSearch: { filter: containsIgnoreCase },
       },
+      headerLayout: [
+        {xs: 4, buildIn: true, component: "PageSizeChanger", title: "单页条数"},
+        {xs: 4, xsOffset: 4, buildIn: true, component: "SearchBar", className: "pull-right", title: "搜索"}
+      ],
+      bottomLayout: [
+        {xs: 8, xsOffset: 4, buildIn: true, component: "Pagination"}
+      ]
     };
 
     constructor(props: Props) {
