@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import { DataTable } from 'react-data-components';
 
@@ -36,8 +36,8 @@ function buildTable(api, param) {
           else if (v == 0) return "不通用"; else return "通用";
         }  },
         { title: '入库类别', prop: 'category', width: "8%" },
-        { title: '标注1', prop: 'label1', width: "18%" , className: "sub-table", render: (v, r) => JSON.stringify(v) },
-        { title: '标注2', prop: 'label2', width: "18%" , className: "sub-table", render: (v, r) => JSON.stringify(v) },
+        { title: '标注1', prop: 'label1', width: "18%" , className: "sub-table", render: (v, r) => v },
+        { title: '标注2', prop: 'label2', width: "18%" , className: "sub-table", render: (v, r) => v },
         { title: '导入时间', prop: 'importTime', width: "6%"  },
         { title: '标注时间', prop: 'labelTime', width: "6%"  },
         { title: '修改', prop: 'edit', width: "4%", render: (v, r) => (
@@ -62,8 +62,54 @@ function buildTable(api, param) {
   );
 }
 
+class Main extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      api: "/api/tasks",
+      param: {label_type:"category", task_type: "all"}
+    }
+    this.hc = this.hc.bind(this);
+  }
+
+  hc(n) {
+    console.log("hc "+n);
+    if (n==1) this.setState({param: {label_type: "attribute", task_type: "all"}});
+    if (n==2) this.setState({param: {label_type: "category", task_type: "one_token"}});
+    if (n==3) this.setState({param: {label_type: "attribute", task_type: "one_token_no_label"}});
+    if (n==4) this.setState({param: {label_type: "category", task_type: "label_conflict"}});
+  }
+
+  render() {
+    const table = buildTable(this.state.api, this.state.param);
+    const hc = this.hc;
+    return (
+      <div>
+        <div className="row">
+        <div className="col-md-3">
+          <button className="btn btn-primary" onClick={e=>hc(1)}>1</button>
+        </div>
+        <div className="col-md-3">
+          <button className="btn btn-primary" onClick={e=>hc(2)}>2</button>
+        </div>
+        <div className="col-md-3">
+          <button className="btn btn-primary" onClick={e=>hc(3)}>3</button>
+        </div>
+        <div className="col-md-3">
+          <button className="btn btn-primary" onClick={e=>hc(4)}>4</button>
+        </div>
+        </div>
+        <div className="row">
+          {table}
+        </div>
+      </div>
+    )
+  }
+}
+
 ReactDOM.render(
-  buildTable("/api/tasks", {label_type:"category", task_type: "all"}),
+  <Main />,
   document.getElementById('root')
 );
 

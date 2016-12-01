@@ -74,7 +74,8 @@ export default function enhanceDataTable(ComposedComponent) {
           dataReducer(state, dataLoaded(nextProps.initialData))
         );
       } else {
-        this.onFetching(extractStateUrl(nextProps));
+        const newState = {...this.state, ...mapPropsToState(nextProps)}
+        this.onFetching(extractStateUrl(newState));
       }
     }
 
