@@ -19,11 +19,13 @@ type Props = {
   bottomLayout: Array<object>;
   api: string;
   initialApiParam: object;
+  initialPageNumber: number;
 };
 
 const mapPropsToState = (props) => ({
   api: props.api,
   initialApiParam: props.initialApiParam,
+  pageNumber: props.initialPageNumber,
   pageSize: props.initialPageLength,
   sortBy: props.initialSortBy,
 });
@@ -32,6 +34,7 @@ export default function enhanceDataTable(ComposedComponent) {
   return class DataTableEnhancer extends Component {
     static defaultProps = {
       initialApiParam: {},
+      initialPageNumber: 0,
       initialPageLength: 10,
       pageLengthOptions: [ 5, 10, 20 ],
       filters: {
@@ -75,6 +78,7 @@ export default function enhanceDataTable(ComposedComponent) {
         );
       } else {
         const newState = {...this.state, ...mapPropsToState(nextProps)}
+        this.setState(newState);
         this.onFetching(extractStateUrl(newState));
       }
     }

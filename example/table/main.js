@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import { DataTable } from 'react-data-components';
 
-function buildTable(api, param) {
+function buildTable(n, api, param) {
   const renderMapUrl =
     (val, row) =>
       <a href={`https://www.google.com/maps?q=${row['lat']},${row['long']}`}>
@@ -23,7 +23,7 @@ function buildTable(api, param) {
     2: "属性已标"
   }
 
-  const columns = [
+  let columns = [
         { title: 'ID', prop: 'queryId', width: "4%" },
         { title: '对话Id', prop: 'dialogId', width: "4%" },
         { title: '问题', prop: 'query', width: "20%" },
@@ -36,8 +36,8 @@ function buildTable(api, param) {
           else if (v == 0) return "不通用"; else return "通用";
         }  },
         { title: '入库类别', prop: 'category', width: "8%" },
-        { title: '标注1', prop: 'label1', width: "18%" , className: "sub-table", render: (v, r) => v },
-        { title: '标注2', prop: 'label2', width: "18%" , className: "sub-table", render: (v, r) => v },
+        { title: '标注1', prop: 'label1', width: "18%" , className: "sub-table", render: (v, r) => "A" },
+        { title: '标注2', prop: 'label2', width: "18%" , className: "sub-table", render: (v, r) => "A" },
         { title: '导入时间', prop: 'importTime', width: "6%"  },
         { title: '标注时间', prop: 'labelTime', width: "6%"  },
         { title: '修改', prop: 'edit', width: "4%", render: (v, r) => (
@@ -46,6 +46,31 @@ function buildTable(api, param) {
           </div>
         )}
   ];
+  if (n%2==1) {
+    columns = [
+          { title: 'ID', prop: 'queryId', width: "4%" },
+          { title: '对话Id', prop: 'dialogId', width: "4%" },
+          { title: '问题', prop: 'query', width: "20%" },
+          { title: '来源', prop: 'source', width: "4%" },
+          { title: '状态', prop: 'status', width: "4%", render:(v,r)=>queryStatus[v]},
+          { title: '领取数', prop: 'takeCount', width: "4%"  },
+          { title: '标注数', prop: 'labelCount', width: "4%"  },
+          { title: '场景通用', prop: 'isGeneral', width: "4%", render: (v, r) => {
+            if (v == null) return "未标注";
+            else if (v == 0) return "不通用"; else return "通用";
+          }  },
+          { title: '入库类别', prop: 'category', width: "8%" },
+          { title: '标注1', prop: 'label1', width: "18%" , className: "sub-table", render: (v, r) => "B" },
+          { title: '标注2', prop: 'label2', width: "18%" , className: "sub-table", render: (v, r) => "B" },
+          { title: '导入时间', prop: 'importTime', width: "6%"  },
+          { title: '标注时间', prop: 'labelTime', width: "6%"  },
+          { title: '修改', prop: 'edit', width: "4%", render: (v, r) => (
+            <div>
+              <button type="button" className="btn blue">修改</button>
+            </div>
+          )}
+    ];
+  }
 
   return (
     <DataTable
@@ -67,6 +92,7 @@ class Main extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      n: 0,
       api: "/api/tasks",
       param: {label_type:"category", task_type: "all"}
     }
@@ -75,14 +101,14 @@ class Main extends Component {
 
   hc(n) {
     console.log("hc "+n);
-    if (n==1) this.setState({param: {label_type: "attribute", task_type: "all"}});
-    if (n==2) this.setState({param: {label_type: "category", task_type: "one_token"}});
-    if (n==3) this.setState({param: {label_type: "attribute", task_type: "one_token_no_label"}});
-    if (n==4) this.setState({param: {label_type: "category", task_type: "label_conflict"}});
+    if (n==1) this.setState({n, param: {label_type: "attribute", task_type: "all"}});
+    if (n==2) this.setState({n, param: {label_type: "category", task_type: "one_token"}});
+    if (n==3) this.setState({n, param: {label_type: "attribute", task_type: "one_token_no_label"}});
+    if (n==4) this.setState({n, param: {label_type: "category", task_type: "label_conflict"}});
   }
 
   render() {
-    const table = buildTable(this.state.api, this.state.param);
+    const table = buildTable(this.state.n, this.state.api, this.state.param);
     const hc = this.hc;
     return (
       <div>
