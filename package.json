@@ -57,7 +57,7 @@
     "clean": "rimraf lib dist coverage",
     "lint": "eslint src",
     "prepublish": "npm run clean && npm run build",
-    "start": "webpack-dev-server -d --config example/webpack.config.js",
+    "start": "webpack-dev-server -d --config example/webpack.config.js --port 3000",
     "test": "npm run lint && npm run check && jest"
   },
   "jest": {

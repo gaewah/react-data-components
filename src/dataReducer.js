@@ -11,12 +11,14 @@ const initialState: State = {
   data: [],
   page: [],
   filterValues: { globalSearch: '' },
-  totalPages: 0,
+  totalPages: 10,
   sortBy: null,
   pageNumber: 0,
   pageSize: 5,
   invalidate: true,
-  fetching: false
+  fetching: false,
+  api: "",
+  initialApiParam: {}
 };
 
 function calculatePage(data, pageSize, pageNumber) {
@@ -25,11 +27,19 @@ function calculatePage(data, pageSize, pageNumber) {
   }
 
   const start = pageSize * pageNumber;
+  //totalPages: Math.ceil(data.length / pageSize),
 
   return {
     page: data.slice(start, start + pageSize),
-    totalPages: Math.ceil(data.length / pageSize),
+    totalPages: 10
   };
+}
+
+function ajaxCalculatePage(totalRecords, pageSize) {
+  const totalPages = Math.ceil(totalRecords / pageSize);
+  return {
+    totalPages
+  }
 }
 
 function pageNumberChange(state, {value: pageNumber}) {
@@ -82,6 +92,14 @@ function dataFilter(state, {value: {key, value, filters}}) {
   };
 }
 
+function dataFetching(state) {
+  return {
+    ...state,
+    invalidate: false,
+    fetching: true,
+  }
+}
+
 function dataLoaded(state, {value: data}) {
   // Filled missing properties.
   const filledState = { ...initialState, ...state };
@@ -93,9 +111,23 @@ function dataLoaded(state, {value: data}) {
 
   return {
     ...filledState,
-    ...calculatePage(data, pageSize, pageNumber),
     data,
     initialData: data,
+    ...calculatePage(data, pageSize, pageNumber),
+  };
+}
+
+function dataReloaded(state, {value:{totalRecords, page}}) {
+  const filledState = { ...initialState, ...state };
+  const {pageSize} = filledState;
+  return {
+    ...filledState,
+    page: page,
+    data: page,
+    initialData: page,
+    ...ajaxCalculatePage(totalRecords, pageSize),
+    invalidate: false,
+    fetching: false,
   };
 }
 
@@ -104,8 +136,14 @@ export default function dataReducer(
   action: Action
 ): State {
   switch (action.type) {
+    case ActionTypes.DATA_FETCHING:
+      return dataFetching(state);
+
     case ActionTypes.DATA_LOADED:
       return dataLoaded(state, action);
+
+    case ActionTypes.DATA_RELOADED:
+      return dataReloaded(state, action);
 
     case ActionTypes.PAGE_NUMBER_CHANGE:
       return pageNumberChange(state, action);

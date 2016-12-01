@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import dataReducer from './dataReducer';
 import {
   dataLoaded, dataSort, dataFilter,
-  pageNumberChange, pageSizeChange,
+  pageNumberChange, pageSizeChange, dataFetchIfNeed
 } from './actions';
-import {containsIgnoreCase} from './utils';
+import {containsIgnoreCase, extractStateUrl} from './utils';
 import type {State} from './types';
 
 type Props = {
@@ -17,9 +17,13 @@ type Props = {
   filters: any;
   headerLayout: Array<object>;
   bottomLayout: Array<object>;
+  api: string;
+  initialApiParam: object;
 };
 
 const mapPropsToState = (props) => ({
+  api: props.api,
+  initialApiParam: props.initialApiParam,
   pageSize: props.initialPageLength,
   sortBy: props.initialSortBy,
 });
@@ -27,6 +31,7 @@ const mapPropsToState = (props) => ({
 export default function enhanceDataTable(ComposedComponent) {
   return class DataTableEnhancer extends Component {
     static defaultProps = {
+      initialApiParam: {},
       initialPageLength: 10,
       pageLengthOptions: [ 5, 10, 20 ],
       filters: {
@@ -43,16 +48,42 @@ export default function enhanceDataTable(ComposedComponent) {
 
     constructor(props: Props) {
       super(props);
+
       this.state = dataReducer(
         mapPropsToState(props),
         dataLoaded(props.initialData)
       );
+
+      this.dispatcher = {
+        dataReducer,
+        state:this.state,
+        setState:this.setState.bind(this)
+      };
+    }
+
+    componentWillMount() {
+      if (this.state.api != null) {
+        const url = extractStateUrl(this.state);
+        this.onFetching(url);
+      }
     }
 
     componentWillReceiveProps(nextProps) {
-      this.setState((state) =>
-        dataReducer(state, dataLoaded(nextProps.initialData))
-      );
+      if (nextProps.api == null) {
+        this.setState((state) =>
+          dataReducer(state, dataLoaded(nextProps.initialData))
+        );
+      } else {
+        this.onFetching(extractStateUrl(nextProps));
+      }
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+      if (nextState.pageNumber !== this.state.pageNumber ||
+          nextState.pageSize !== this.state.pageSize ||
+          (nextState.invalidate && !this.state.invalidate)) {
+        this.onFetching(extractStateUrl(nextState));
+      }
     }
 
     onPageNumberChange = (value) => {
@@ -73,6 +104,10 @@ export default function enhanceDataTable(ComposedComponent) {
       );
     };
 
+    onFetching = (url) => {
+      dataFetchIfNeed(this.dispatcher, url);
+    }
+
     render() {
       return (
         <ComposedComponent
@@ -80,6 +115,7 @@ export default function enhanceDataTable(ComposedComponent) {
           onPageSizeChange={this.onPageSizeChange}
           onSort={this.onSort}
           onFilter={this.onFilter}
+          onFetching={this.onFetching}
           data={this.state}
           {...this.props}
         />

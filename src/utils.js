@@ -28,3 +28,16 @@ export function containsIgnoreCase(a: Value, b: Value) {
   b = String(b).toLowerCase().trim();
   return b.indexOf(a) >= 0;
 }
+
+export function extractStateUrl(state) {
+  const esc = encodeURIComponent;
+  const { pageNumber, pageSize, api, initialApiParam } = state;
+  const param = {
+    ...initialApiParam,
+    page_num: pageNumber,
+    page_size: pageSize,
+  }
+  const params = Object.keys(param).map(k => `${esc(k)}=${esc(param[k])}`).join('&');
+  const url = `${api}?${params}`
+  return url;
+}

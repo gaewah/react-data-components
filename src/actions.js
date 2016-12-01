@@ -10,6 +10,7 @@ export const ActionTypes = {
   PAGE_SIZE_CHANGE: 'PAGE_SIZE_CHANGE',
   DATA_FILTER: 'DATA_FILTER',
   DATA_SORT: 'DATA_SORT',
+  DATA_RELOADED: 'DATA_RELOADED',
   DATA_FETCHING: 'DATA_FETCHING',
   DATA_INVALIDATE: 'DATA_INVALIDATE'
 };
@@ -28,6 +29,24 @@ export function dataSort(value: SortBy): Action {
 
 export function dataLoaded(value: Array<any>): Action {
   return { value, type: ActionTypes.DATA_LOADED };
+}
+
+export function dataReLoaded(totalRecords, value: Array<any>): Action {
+  return { value: {totalRecords, page: value}, type: ActionTypes.DATA_RELOADED };
+}
+
+function dataRequest() {
+  return { type: ActionTypes.DATA_FETCHING };
+}
+
+export function dataFetchIfNeed(dispatcher, url) {
+  const {dataReducer, state, setState} = dispatcher;
+  if (!state.fetching && state.invalidate) {
+    setState((state) => dataReducer(state, dataRequest()));
+    fetch(url, {credentials: 'include'})
+    .then(response => response.json())
+    .then(value => setState((state) => dataReducer(state, dataReLoaded(value.data.totalRecords, value.data.page))));
+  }
 }
 
 // Probably a bad idea to send down `filters` here.
