@@ -10,6 +10,8 @@ export const ActionTypes = {
   PAGE_SIZE_CHANGE: 'PAGE_SIZE_CHANGE',
   DATA_FILTER: 'DATA_FILTER',
   DATA_SORT: 'DATA_SORT',
+  DATA_FETCHING: 'DATA_FETCHING',
+  DATA_INVALIDATE: 'DATA_INVALIDATE'
 };
 
 export function pageNumberChange(value: number): Action {

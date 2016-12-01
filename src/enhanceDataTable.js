@@ -34,7 +34,7 @@ export default function enhanceDataTable(ComposedComponent) {
       },
       headerLayout: [
         {xs: 4, buildIn: true, component: "PageSizeChanger", title: "单页条数"},
-        {xs: 4, xsOffset: 4, buildIn: true, component: "SearchBar", className: "pull-right", title: "搜索"}
+        {xs: 4, xsOffset: 4, buildIn: true, component: "SearchBar", title: "搜索"}
       ],
       bottomLayout: [
         {xs: 8, xsOffset: 4, buildIn: true, component: "Pagination"}

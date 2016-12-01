@@ -15,19 +15,26 @@ export default class PageSizeChanger extends Component {
 	render() {
     const {title, pageSize, onPageSizeChange, pageLengthOptions} = this.props;
     return (
-      <div className={this.props.className}>
-        <label htmlFor="page-menu">{title}:</label>
-        <select
-          id="page-menu"
-          value={pageSize}
-          onChange={onPageSizeChange}
-        >
-          {pageLengthOptions.map(opt =>
-            <option key={opt} value={opt}>
-              {opt === 0 ? 'All' : opt}
-            </option>
-          )}
-        </select>
+      <div className={`${this.props.className} form-horizontal`}>
+        <div className="form-group">
+          <div className="col-xs-3">
+          <label style={{lineHeight: "34px"}} htmlFor="page-menu">{title}:</label>
+          </div>
+          <div className="col-xs-9">
+          <select
+            id="page-menu"
+            className="form-control"
+            value={pageSize}
+            onChange={onPageSizeChange}
+          >
+            {pageLengthOptions.map(opt =>
+              <option key={opt} value={opt}>
+                {opt === 0 ? 'All' : opt}
+              </option>
+            )}
+          </select>
+          </div>
+        </div>
       </div>
     )
 	}

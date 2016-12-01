@@ -14,14 +14,21 @@ export default class SearchBar extends Component {
   render() {
     const {title, filterValues, onFilter} = this.props;
     return (
-      <div className={this.props.className}>
-        <label htmlFor="search-field">{title}:</label>
-        <input
-          id="search-field"
-          type="search"
-          value={filterValues.globalSearch}
-          onChange={onFilter.bind(null, 'globalSearch')}
-        />
+      <div className={`${this.props.className} form-horizontal`}>
+        <div className="form-group">
+          <div className="col-xs-3">
+            <label style={{lineHeight: "34px"}} htmlFor="search-field">{title}:</label>
+          </div>
+          <div className="col-xs-9">
+            <input
+              id="search-field"
+              className="form-control"
+              type="search"
+              value={filterValues.globalSearch}
+              onChange={onFilter.bind(null, 'globalSearch')}
+            />
+          </div>
+        </div>
       </div>
     )
   }
