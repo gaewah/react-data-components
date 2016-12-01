@@ -15,6 +15,8 @@ const initialState: State = {
   sortBy: null,
   pageNumber: 0,
   pageSize: 5,
+  invalidate: true,
+  fetching: false
 };
 
 function calculatePage(data, pageSize, pageNumber) {

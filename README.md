@@ -1,5 +1,6 @@
-# react-data-components
+# react-table-util
 
+forked from
 [![Build Status](https://travis-ci.org/carlosrocha/react-data-components.svg?branch=master)](https://travis-ci.org/carlosrocha/react-data-components)
 
 DataTable: [Live demo and source](https://jsfiddle.net/carlosrocha/xgde4uh0/)
